@@ -1,5 +1,0 @@
--NPM INSTALL
--npm install admin-lte@v3.0.0-alpha.2 --save
--composer require laravel/ui
--php artisan ui vue --auth
--php artisan migrate
