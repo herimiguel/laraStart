@@ -2108,34 +2108,64 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    updateInfo: function updateInfo() {
-      this.form.put('api/profile/');
-      then(function () {})["catch"](function () {});
+    // getProfilePhoto(){
+    //     return "img/profile/"+ this.form.photo;
+    // },
+    getProfilePhoto: function getProfilePhoto() {
+      var photo = this.form.photo;
+
+      if (this.form.photo) {
+        var prefix = this.form.photo.match(/\//) ? '' : '/img/profile/';
+        return prefix + this.form.photo;
+      } else {
+        photo = 'img/profiles/' + this.form.photo;
+      }
+
+      return photo;
     },
-    updateProfile: function updateProfile(e) {
+    updateInfo: function updateInfo() {
       var _this = this;
 
-      // console.log('uploading ....');
-      var file = e.target.files[0]; // console.log(file);
+      this.$Progress.start();
+      this.form.put('api/profile/').then(function () {
+        Fire.$emit('AfterCreate');
 
+        _this.$Progress.finish();
+      })["catch"](function () {
+        _this.$Progress.fail();
+      });
+    },
+    updateProfile: function updateProfile(e) {
+      var _this2 = this;
+
+      // console.log('uploading ....');
+      var file = e.target.files[0];
+      console.log(file);
       var reader = new FileReader();
 
-      reader.onloadend = function (file) {
-        // console.log('Result', reader.result);
-        _this.form.photo = reader.result;
-      };
+      if (file['size'] < 2111775) {
+        reader.onloadend = function (file) {
+          // console.log('Result', reader.result);
+          _this2.form.photo = reader.result;
+        };
 
-      reader.readAsDataURL(file);
-    },
-    getProfilePhoto: function getProfilePhoto() {}
+        reader.readAsDataURL(file);
+      } else {
+        swal({
+          type: 'error',
+          title: 'Oops...',
+          text: 'You are uploading a large file'
+        });
+      }
+    }
   },
   mounted: function mounted() {},
   created: function created() {
-    var _this2 = this;
+    var _this3 = this;
 
     axios.get('api/profile').then(function (_ref) {
       var data = _ref.data;
-      return _this2.form.fill(data);
+      return _this3.form.fill(data);
     });
   }
 });
@@ -61132,7 +61162,7 @@ var render = function() {
             "div",
             {
               staticClass: "widget-user-header text-white",
-              staticStyle: { "background-image": "url('./img/user-cover.jpg')" }
+              staticStyle: { "background-image": "url('./img/desk.png')" }
             },
             [
               _c("h3", { staticClass: "widget-user-username" }, [
@@ -61348,7 +61378,7 @@ var render = function() {
                           staticClass: "col-sm-12 control-label",
                           attrs: { for: "password" }
                         },
-                        [_vm._v("Passport (leave empty if not changing)")]
+                        [_vm._v("Password (leave empty if not changing)")]
                       ),
                       _vm._v(" "),
                       _c(
