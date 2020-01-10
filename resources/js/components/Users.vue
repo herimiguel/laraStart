@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="row mt-5">
+        <div class="row mt-5" v-if="$gate.isAdminOrAuthor()" >
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
@@ -49,6 +49,11 @@
             <!-- /.card -->
           </div>
         </div>
+        <div v-if="!$gate.isAdminOrAuthor()">
+          <not-found></not-found>
+        </div>
+
+
         <div class="modal fade" id="addNew" tabindex="-1" role="dialog" aria-labelledby="addNewLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered " role="document">
     <div class="modal-content">
@@ -204,7 +209,11 @@
 
           },
           loadUsers(){
+              if(this.$gate.isAdminOrAuthor()){
+
               axios.get("api/user").then(({ data }) => (this.users = data.data));
+              }
+
           },
           createUser(){
               this.$Progress.start();
@@ -227,6 +236,16 @@
               }
         },
         created() {
+              Fire.$on('seraching', ()=>{
+                let query = this.$parent.search;
+                axios.get('api/findUser?q=' +query)
+                .then((data)=>{
+                    this.users = data.data
+                })
+                .catch(()=>{
+
+                })
+              })
               this.loadUsers();
               Fire.$on('AfterCreate', () => {
                 this.loadUsers();

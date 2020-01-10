@@ -8,6 +8,16 @@ window.Vue = require('vue');
 import moment from 'moment';
 import { Form, HasError, AlertError } from 'vform'
 
+import Gate from "./Gate";
+
+
+Vue.prototype.$gate = new Gate(window.user);
+
+
+
+
+
+
 import swal from 'sweetalert2'
 window.swal = swal;
 const toast = swal.mixin({
@@ -23,6 +33,7 @@ window.toast = toast;
 window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
+
 Vue.use(vueProgressBar, {
   color: 'rgb(143, 255, 199)',
   fiailedColor: 'red',
@@ -35,9 +46,10 @@ import vueProgressBar from 'vue-progressbar'
 
 const routes = [
     { path: '/developer', component:require('./components/Developer.vue').default},
+    { path: '/users', component:require('./components/Users.vue').default },
     { path: '/dashboard', component:require('./components/Dashboard.vue').default},
     { path: '/profile', component:require('./components/Profile.vue').default },
-    { path: '/users', component:require('./components/Users.vue').default },
+    { path: '/*', component:require('./components/NotFound.vue').default },
   ]
 
   const router = new VueRouter({
@@ -76,10 +88,21 @@ Vue.component(
   'passport-personal-access-tokens',
   require('./components/passport/PersonalAccessTokens.vue').default
 );
+Vue.component(
+  'not-found',
+  require('./components/NotFound.vue').default
+);
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
 const app = new Vue({
     el: '#app',
-    router
+    router,
+    data:{
+      search:''
+    },
+    methods:{
+      searchit(){
+        Fire.$emit('searching');
+      }
+    }
 });
